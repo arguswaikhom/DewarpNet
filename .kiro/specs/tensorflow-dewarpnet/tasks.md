@@ -10,7 +10,6 @@
 
 - [ ] 2. Core Model Architecture Implementation
 
-
 - [x] 2.1 Implement TensorFlow UNet Generator
 
   - Create UnetGenerator class with identical architecture to PyTorch version
@@ -37,8 +36,10 @@
   - Write integration tests for model creation and loading
   - _Requirements: 2.1, 2.2, 2.4_
 
-- [ ] 3. Data Loading Pipeline Implementation
-- [ ] 3.1 Implement World Coordinate Data Loader
+- [x] 3. Data Loading Pipeline Implementation
+
+
+- [x] 3.1 Implement World Coordinate Data Loader
 
   - Create Doc3DWCLoader class with identical preprocessing to PyTorch
   - Implement image and EXR file loading with proper normalization
@@ -47,7 +48,7 @@
   - Write unit tests for data loading and preprocessing
   - _Requirements: 3.1, 3.2, 3.3_
 
-- [ ] 3.2 Implement Backward Mapping Data Loader
+- [x] 3.2 Implement Backward Mapping Data Loader
 
   - Create Doc3DBMLoader class for backward mapping training data
   - Implement albedo and world coordinate concatenation
@@ -56,7 +57,7 @@
   - Write unit tests for backward mapping data processing
   - _Requirements: 3.1, 3.2, 3.4_
 
-- [ ] 3.3 Create TensorFlow Data Pipeline
+- [x] 3.3 Create TensorFlow Data Pipeline
 
   - Implement tf.data.Dataset integration for efficient data loading
   - Add prefetching and parallel data loading optimizations
