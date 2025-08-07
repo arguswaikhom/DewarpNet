@@ -80,23 +80,79 @@ def install_dependencies(env_name, requirements_file):
     """Install dependencies in conda environment."""
     print(f"Installing dependencies from {requirements_file}")
     
+    # Update pip first
+    run_command(f"conda run -n {env_name} pip install --upgrade pip setuptools")
+    
     # Install pip packages
     run_command(f"conda run -n {env_name} pip install -r {requirements_file}")
     
     # Install additional conda packages for better GPU support
+    print("Installing CUDA support packages...")
     run_command(f"conda install -n {env_name} cudatoolkit cudnn -c conda-forge -y")
+    
+    # Validate installation
+    print("Validating TensorFlow installation...")
+    result = run_command(f"conda run -n {env_name} python -c \"import tensorflow as tf; print(f'TensorFlow {tf.__version__} installed successfully')\"", check=False)
+    
+    if result.returncode == 0:
+        print("✓ TensorFlow installation validated")
+        
+        # Check GPU support
+        gpu_result = run_command(f"conda run -n {env_name} python -c \"import tensorflow as tf; gpus=tf.config.list_physical_devices('GPU'); print(f'GPUs detected: {len(gpus)}')\"", check=False)
+        if gpu_result.returncode == 0:
+            print("✓ GPU detection test completed")
+    else:
+        print("❌ TensorFlow installation validation failed")
+        print("You may need to run troubleshooting: python tensorflow/utils/troubleshoot.py")
 
 
 def setup_dataset_links(dataset_path="/home/argus/Workspace/dataset", project_root=None):
-    """Create symbolic links to dataset directories."""
+    """Create symbolic links to dataset directories using DatasetManager."""
     print("Setting up dataset symbolic links...")
     
     dataset_path = Path(dataset_path)
     if not dataset_path.exists():
         print(f"Warning: Dataset path {dataset_path} does not exist.")
         print("Please ensure the dataset is available at the specified location.")
+        print("You can run dataset preparation later with:")
+        print("python tensorflow/utils/dataset_prep.py --setup-recommended")
         return
     
+    try:
+        # Import and use DatasetManager
+        sys.path.append(str(Path(__file__).parent))
+        from utils.dataset_manager import DatasetManager
+        
+        manager = DatasetManager(str(dataset_path))
+        link_results = manager.create_symbolic_links(force=False)
+        
+        # Print results
+        successful_links = sum(link_results.values())
+        total_links = len(link_results)
+        
+        print(f"Dataset links created: {successful_links}/{total_links}")
+        
+        if successful_links > 0:
+            print("✓ Dataset setup complete")
+            print("Available datasets:")
+            for dataset_name, success in link_results.items():
+                status = "✓" if success else "❌"
+                print(f"  {status} {dataset_name}")
+        else:
+            print("⚠️  No dataset links created")
+            print("You can set up datasets later with:")
+            print("python tensorflow/utils/dataset_prep.py --interactive")
+            
+    except ImportError as e:
+        print(f"Warning: Could not import DatasetManager: {e}")
+        print("Using fallback dataset link creation...")
+        
+        # Fallback to original implementation
+        _setup_dataset_links_fallback(dataset_path, project_root)
+
+
+def _setup_dataset_links_fallback(dataset_path, project_root):
+    """Fallback dataset link creation."""
     # Find tensorflow directory
     if project_root:
         data_dir = project_root / "tensorflow" / "data"
@@ -210,8 +266,12 @@ def main():
     print("\n=== Setup Complete ===")
     print("Next steps:")
     print("1. Activate the conda environment: conda activate dewarpnet_tf_kiro_full")
-    print("2. Run GPU validation: python tensorflow/utils/gpu_utils.py")
-    print("3. Test data loading: python tensorflow/utils/test_setup.py")
+    print("2. Run environment validation: python tensorflow/utils/env_validator.py")
+    print("3. Run GPU validation: python tensorflow/utils/gpu_utils.py")
+    print("4. Set up datasets: python tensorflow/utils/dataset_prep.py --setup-recommended")
+    print("5. Test complete setup: python tensorflow/utils/test_setup.py")
+    print("\nFor troubleshooting: python tensorflow/utils/troubleshoot.py")
+    print("For dataset management: python tensorflow/utils/dataset_prep.py --interactive")
 
 
 if __name__ == "__main__":

@@ -164,8 +164,10 @@
   - Write memory usage and GPU utilization tests
   - _Requirements: 1.3, 1.4, 2.4_
 
-- [ ] 8. Environment and Deployment Setup
-- [ ] 8.1 Create Environment Setup Scripts
+- [x] 8. Environment and Deployment Setup
+
+
+- [x] 8.1 Create Environment Setup Scripts
 
   - Implement conda environment creation script
   - Create dependency installation and validation
@@ -174,7 +176,7 @@
   - Write documentation for environment setup process
   - _Requirements: 5.1, 5.2, 5.3, 5.4_
 
-- [ ] 8.2 Create Dataset Configuration and Testing
+- [x] 8.2 Create Dataset Configuration and Testing
 
   - Implement dataset path configuration and validation
   - Create symbolic link setup for different dataset sizes
