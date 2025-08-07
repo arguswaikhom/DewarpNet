@@ -67,7 +67,6 @@
 
 - [x] 4. Loss Function Implementation
 
-
 - [x] 4.1 Implement Gradient Loss Function
 
   - Create Sobel filter implementation for gradient computation
@@ -93,8 +92,10 @@
   - Write integration tests for combined loss computation
   - _Requirements: 4.1, 4.2, 4.3_
 
-- [ ] 5. Training Pipeline Implementation
-- [ ] 5.1 Implement World Coordinate Training Script
+- [x] 5. Training Pipeline Implementation
+
+
+- [x] 5.1 Implement World Coordinate Training Script
 
   - Create training loop matching PyTorch trainwc.py logic
   - Implement Adam optimizer with identical hyperparameters
@@ -104,7 +105,7 @@
   - Write training progress monitoring and logging
   - _Requirements: 4.3, 4.4_
 
-- [ ] 5.2 Implement Backward Mapping Training Script
+- [x] 5.2 Implement Backward Mapping Training Script
 
   - Create training loop matching PyTorch trainbm.py logic
   - Implement combined loss function with proper weighting
@@ -114,7 +115,7 @@
   - Write comprehensive training logs and progress tracking
   - _Requirements: 4.3, 4.4_
 
-- [ ] 5.3 Create Training Utilities and Helpers
+- [x] 5.3 Create Training Utilities and Helpers
 
   - Implement learning rate scheduling utilities
   - Create metric computation and logging functions
