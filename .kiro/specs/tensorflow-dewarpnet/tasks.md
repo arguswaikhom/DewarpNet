@@ -38,7 +38,6 @@
 
 - [x] 3. Data Loading Pipeline Implementation
 
-
 - [x] 3.1 Implement World Coordinate Data Loader
 
   - Create Doc3DWCLoader class with identical preprocessing to PyTorch
@@ -66,8 +65,10 @@
   - Write performance tests for data loading speed
   - _Requirements: 3.1, 3.2_
 
-- [ ] 4. Loss Function Implementation
-- [ ] 4.1 Implement Gradient Loss Function
+- [x] 4. Loss Function Implementation
+
+
+- [x] 4.1 Implement Gradient Loss Function
 
   - Create Sobel filter implementation for gradient computation
   - Implement multi-channel gradient calculation
@@ -75,7 +76,7 @@
   - Write unit tests comparing with PyTorch gradient loss output
   - _Requirements: 4.1, 4.3_
 
-- [ ] 4.2 Implement Reconstruction Loss Function
+- [x] 4.2 Implement Reconstruction Loss Function
 
   - Create grid sampling function for image unwarping
   - Implement MSE loss between unwarped predictions and ground truth
@@ -84,7 +85,7 @@
   - Write unit tests for reconstruction loss components
   - _Requirements: 4.2, 4.3_
 
-- [ ] 4.3 Create Loss Function Factory
+- [x] 4.3 Create Loss Function Factory
 
   - Implement loss function selection and configuration utilities
   - Add loss weighting and combination functionality
