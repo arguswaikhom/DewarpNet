@@ -2,10 +2,6 @@
 
 - [x] 1. Environment Setup and Project Structure
 
-
-
-
-
   - Create tensorflow directory structure with all necessary subdirectories
   - Set up conda environment with TensorFlow GPU support and required dependencies
   - Create symbolic links to dataset directories without modifying original data
@@ -13,14 +9,18 @@
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 6.3_
 
 - [ ] 2. Core Model Architecture Implementation
-- [ ] 2.1 Implement TensorFlow UNet Generator
+
+
+- [x] 2.1 Implement TensorFlow UNet Generator
+
   - Create UnetGenerator class with identical architecture to PyTorch version
   - Implement UnetSkipConnectionBlock with proper skip connections
   - Add support for 7-level downsampling with BatchNorm and activations
   - Write unit tests to verify output shapes and parameter counts match PyTorch
   - _Requirements: 2.1, 2.3_
 
-- [ ] 2.2 Implement TensorFlow DenseNet Architecture
+- [x] 2.2 Implement TensorFlow DenseNet Architecture
+
   - Create DenseBlockEncoder and DenseBlockDecoder classes
   - Implement DenseTransitionBlockEncoder and DenseTransitionBlockDecoder
   - Add coordconv channel functionality for spatial awareness
@@ -29,7 +29,8 @@
   - Write unit tests for all DenseNet components
   - _Requirements: 2.2, 2.3_
 
-- [ ] 2.3 Create Model Factory and Utilities
+- [x] 2.3 Create Model Factory and Utilities
+
   - Implement get_model function for model instantiation
   - Add model parameter counting and comparison utilities
   - Create checkpoint conversion utilities between PyTorch and TensorFlow
@@ -38,6 +39,7 @@
 
 - [ ] 3. Data Loading Pipeline Implementation
 - [ ] 3.1 Implement World Coordinate Data Loader
+
   - Create Doc3DWCLoader class with identical preprocessing to PyTorch
   - Implement image and EXR file loading with proper normalization
   - Add data augmentation pipeline matching PyTorch implementation
@@ -46,6 +48,7 @@
   - _Requirements: 3.1, 3.2, 3.3_
 
 - [ ] 3.2 Implement Backward Mapping Data Loader
+
   - Create Doc3DBMLoader class for backward mapping training data
   - Implement albedo and world coordinate concatenation
   - Add tight cropping with random padding for augmentation
@@ -54,6 +57,7 @@
   - _Requirements: 3.1, 3.2, 3.4_
 
 - [ ] 3.3 Create TensorFlow Data Pipeline
+
   - Implement tf.data.Dataset integration for efficient data loading
   - Add prefetching and parallel data loading optimizations
   - Create batch processing utilities with proper padding
@@ -63,6 +67,7 @@
 
 - [ ] 4. Loss Function Implementation
 - [ ] 4.1 Implement Gradient Loss Function
+
   - Create Sobel filter implementation for gradient computation
   - Implement multi-channel gradient calculation
   - Add L1 loss computation between predicted and ground truth gradients
@@ -70,6 +75,7 @@
   - _Requirements: 4.1, 4.3_
 
 - [ ] 4.2 Implement Reconstruction Loss Function
+
   - Create grid sampling function for image unwarping
   - Implement MSE loss between unwarped predictions and ground truth
   - Add SSIM loss computation for perceptual quality assessment
@@ -78,6 +84,7 @@
   - _Requirements: 4.2, 4.3_
 
 - [ ] 4.3 Create Loss Function Factory
+
   - Implement loss function selection and configuration utilities
   - Add loss weighting and combination functionality
   - Create loss logging and monitoring utilities
@@ -86,6 +93,7 @@
 
 - [ ] 5. Training Pipeline Implementation
 - [ ] 5.1 Implement World Coordinate Training Script
+
   - Create training loop matching PyTorch trainwc.py logic
   - Implement Adam optimizer with identical hyperparameters
   - Add learning rate scheduling with ReduceLROnPlateau
@@ -95,6 +103,7 @@
   - _Requirements: 4.3, 4.4_
 
 - [ ] 5.2 Implement Backward Mapping Training Script
+
   - Create training loop matching PyTorch trainbm.py logic
   - Implement combined loss function with proper weighting
   - Add validation loop with metric computation
@@ -104,6 +113,7 @@
   - _Requirements: 4.3, 4.4_
 
 - [ ] 5.3 Create Training Utilities and Helpers
+
   - Implement learning rate scheduling utilities
   - Create metric computation and logging functions
   - Add checkpoint management and backup functionality
@@ -113,6 +123,7 @@
 
 - [ ] 6. Inference Pipeline Implementation
 - [ ] 6.1 Implement TensorFlow Inference Script
+
   - Create inference pipeline matching PyTorch infer.py functionality
   - Implement model loading for both world coordinate and backward mapping models
   - Add image preprocessing and postprocessing utilities
@@ -121,6 +132,7 @@
   - _Requirements: 1.4, 7.1, 7.2_
 
 - [ ] 6.2 Create Image Processing Utilities
+
   - Implement image loading and preprocessing functions
   - Add output image saving with proper format conversion
   - Create visualization utilities for input and output comparison
@@ -130,6 +142,7 @@
 
 - [ ] 7. Testing and Validation Implementation
 - [ ] 7.1 Create Comprehensive Unit Test Suite
+
   - Write unit tests for all model components
   - Create tests for data loading and preprocessing
   - Implement tests for loss function accuracy
@@ -138,6 +151,7 @@
   - _Requirements: 1.3, 2.4, 3.1, 4.3_
 
 - [ ] 7.2 Implement Integration Tests
+
   - Create end-to-end training pipeline tests
   - Implement model compatibility tests with PyTorch
   - Add performance benchmarking tests
@@ -147,6 +161,7 @@
 
 - [ ] 8. Environment and Deployment Setup
 - [ ] 8.1 Create Environment Setup Scripts
+
   - Implement conda environment creation script
   - Create dependency installation and validation
   - Add GPU detection and CUDA setup verification
@@ -155,6 +170,7 @@
   - _Requirements: 5.1, 5.2, 5.3, 5.4_
 
 - [ ] 8.2 Create Dataset Configuration and Testing
+
   - Implement dataset path configuration and validation
   - Create symbolic link setup for different dataset sizes
   - Add dataset integrity checking utilities
@@ -164,6 +180,7 @@
 
 - [ ] 9. Documentation and Final Integration
 - [ ] 9.1 Create Comprehensive Documentation
+
   - Write detailed README for TensorFlow implementation
   - Create training and inference usage guides
   - Add troubleshooting and FAQ documentation
