@@ -94,7 +94,6 @@
 
 - [x] 5. Training Pipeline Implementation
 
-
 - [x] 5.1 Implement World Coordinate Training Script
 
   - Create training loop matching PyTorch trainwc.py logic
@@ -124,8 +123,10 @@
   - Write training configuration management utilities
   - _Requirements: 4.3, 4.4_
 
-- [ ] 6. Inference Pipeline Implementation
-- [ ] 6.1 Implement TensorFlow Inference Script
+- [x] 6. Inference Pipeline Implementation
+
+
+- [x] 6.1 Implement TensorFlow Inference Script
 
   - Create inference pipeline matching PyTorch infer.py functionality
   - Implement model loading for both world coordinate and backward mapping models
@@ -134,7 +135,7 @@
   - Write batch inference capabilities for multiple images
   - _Requirements: 1.4, 7.1, 7.2_
 
-- [ ] 6.2 Create Image Processing Utilities
+- [x] 6.2 Create Image Processing Utilities
 
   - Implement image loading and preprocessing functions
   - Add output image saving with proper format conversion
