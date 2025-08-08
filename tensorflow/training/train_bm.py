@@ -75,11 +75,11 @@ class BackwardMappingTrainer:
         self.gpu_info = setup_gpu()
         self.logger.info(f"GPU setup: {self.gpu_info}")
         
-        # Enable mixed precision if available
-        if self.gpu_info['gpu_available']:
-            policy = tf.keras.mixed_precision.Policy('mixed_float16')
-            tf.keras.mixed_precision.set_global_policy(policy)
-            self.logger.info("Enabled mixed precision training")
+        # Disable mixed precision for compatibility
+        # Mixed precision can cause issues with gradient loss functions
+        policy = tf.keras.mixed_precision.Policy('float32')
+        tf.keras.mixed_precision.set_global_policy(policy)
+        self.logger.info("Using float32 precision for compatibility")
     
     def setup_directories(self):
         """Setup output directories."""
@@ -101,35 +101,37 @@ class BackwardMappingTrainer:
         
         # Training loader
         self.train_loader = Doc3DBMLoader(
-            root_path=self.args.data_path,
+            root=self.args.data_path,
             split='train',
-            img_size=(self.args.img_rows, self.args.img_cols),
-            augmentations=False  # No augmentations as per PyTorch version
+            img_size=(self.args.img_rows, self.args.img_cols)
         )
         
         # Validation loader
         self.val_loader = Doc3DBMLoader(
-            root_path=self.args.data_path,
+            root=self.args.data_path,
             split='val',
-            img_size=(self.args.img_rows, self.args.img_cols),
-            augmentations=False
+            img_size=(self.args.img_rows, self.args.img_cols)
         )
         
         # Create TensorFlow datasets
         self.train_dataset = create_bm_dataset(
-            self.train_loader,
+            root=self.args.data_path,
+            split='train',
             batch_size=self.args.batch_size,
+            img_size=(self.args.img_rows, self.args.img_cols),
             shuffle=True,
             num_parallel_calls=8,
-            prefetch_buffer_size=tf.data.AUTOTUNE
+            prefetch_buffer=tf.data.AUTOTUNE
         )
         
         self.val_dataset = create_bm_dataset(
-            self.val_loader,
+            root=self.args.data_path,
+            split='val',
             batch_size=self.args.batch_size,
+            img_size=(self.args.img_rows, self.args.img_cols),
             shuffle=False,
             num_parallel_calls=8,
-            prefetch_buffer_size=tf.data.AUTOTUNE
+            prefetch_buffer=tf.data.AUTOTUNE
         )
         
         self.logger.info(f"Training samples: {len(self.train_loader)}")
@@ -176,6 +178,10 @@ class BackwardMappingTrainer:
             mode='min',
             min_lr=1e-8
         )
+        
+        # Set the model for the learning rate scheduler
+        if hasattr(self, 'model') and self.model is not None:
+            self.lr_scheduler.set_model(self.model)
     
     def setup_loss_functions(self):
         """Setup loss functions."""
@@ -271,9 +277,7 @@ class BackwardMappingTrainer:
             # Compute reconstruction/unwarp loss
             # Use RGB + world coords (skip last channel) for unwarping
             rgb_wc = images[:, :, :, :-1]  # RGB + world coordinates
-            unwarp_results = self.unwarp_loss_fn(rgb_wc, target_nhwc, labels)
-            recon_loss = unwarp_results['recon_loss']
-            ssim_loss = unwarp_results['ssim_loss']
+            recon_loss, ssim_loss, uworg, uwpred = self.unwarp_loss_fn(rgb_wc, target_nhwc, labels)
             
             # Combined loss (matching PyTorch: 10.0*L1 + 0.5*recon)
             total_loss = (10.0 * l1_loss) + (0.5 * recon_loss)
@@ -304,8 +308,8 @@ class BackwardMappingTrainer:
             'ssim_loss': ssim_loss,
             'mse_loss': mse_loss,
             'predictions': target_nhwc,
-            'unwarp_gt': unwarp_results.get('unwarp_gt'),
-            'unwarp_pred': unwarp_results.get('unwarp_pred')
+            'unwarp_gt': uworg,
+            'unwarp_pred': uwpred
         }
     
     @tf.function
@@ -324,9 +328,7 @@ class BackwardMappingTrainer:
         
         # Compute reconstruction/unwarp loss
         rgb_wc = images[:, :, :, :-1]
-        unwarp_results = self.unwarp_loss_fn(rgb_wc, target_nhwc, labels)
-        recon_loss = unwarp_results['recon_loss']
-        ssim_loss = unwarp_results['ssim_loss']
+        recon_loss, ssim_loss, uworg, uwpred = self.unwarp_loss_fn(rgb_wc, target_nhwc, labels)
         
         return {
             'l1_loss': l1_loss,
@@ -334,8 +336,8 @@ class BackwardMappingTrainer:
             'ssim_loss': ssim_loss,
             'mse_loss': mse_loss,
             'predictions': target_nhwc,
-            'unwarp_gt': unwarp_results.get('unwarp_gt'),
-            'unwarp_pred': unwarp_results.get('unwarp_pred')
+            'unwarp_gt': uworg,
+            'unwarp_pred': uwpred
         }
     
     def log_tensorboard_images(self, unwarp_pred: tf.Tensor, unwarp_gt: tf.Tensor, 
@@ -521,6 +523,13 @@ class BackwardMappingTrainer:
             self.write_log_file(val_losses, epoch + 1, lr, 'Val')
             
             # Learning rate scheduling
+            # Create a dummy model-like object for the scheduler
+            class DummyModel:
+                def __init__(self, optimizer):
+                    self.optimizer = optimizer
+            
+            dummy_model = DummyModel(self.optimizer)
+            self.lr_scheduler.set_model(dummy_model)
             self.lr_scheduler.on_epoch_end(epoch, logs={'val_mse': val_losses['mse_loss']})
             
             # Save best model

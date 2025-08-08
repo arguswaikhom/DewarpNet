@@ -66,14 +66,15 @@ class WorldCoordinateTrainer:
     
     def setup_gpu(self):
         """Setup GPU configuration."""
-        self.gpu_info = setup_gpu()
+        setup_gpu()  # Setup GPU configuration
+        self.gpu_info = get_gpu_info()  # Get GPU info
         self.logger.info(f"GPU setup: {self.gpu_info}")
         
-        # Enable mixed precision if available
-        if self.gpu_info['gpu_available']:
-            policy = tf.keras.mixed_precision.Policy('mixed_float16')
-            tf.keras.mixed_precision.set_global_policy(policy)
-            self.logger.info("Enabled mixed precision training")
+        # Disable mixed precision for compatibility
+        # Mixed precision can cause issues with gradient loss functions
+        policy = tf.keras.mixed_precision.Policy('float32')
+        tf.keras.mixed_precision.set_global_policy(policy)
+        self.logger.info("Using float32 precision for compatibility")
     
     def setup_directories(self):
         """Setup output directories."""
@@ -95,7 +96,7 @@ class WorldCoordinateTrainer:
         
         # Training loader
         self.train_loader = Doc3DWCLoader(
-            root_path=self.args.data_path,
+            root=self.args.data_path,
             split='train',
             img_size=(self.args.img_rows, self.args.img_cols),
             augmentations=True
@@ -103,7 +104,7 @@ class WorldCoordinateTrainer:
         
         # Validation loader
         self.val_loader = Doc3DWCLoader(
-            root_path=self.args.data_path,
+            root=self.args.data_path,
             split='val',
             img_size=(self.args.img_rows, self.args.img_cols),
             augmentations=False
@@ -111,19 +112,25 @@ class WorldCoordinateTrainer:
         
         # Create TensorFlow datasets
         self.train_dataset = create_wc_dataset(
-            self.train_loader,
+            root=self.args.data_path,
+            split='train',
             batch_size=self.args.batch_size,
+            img_size=(self.args.img_rows, self.args.img_cols),
+            augmentations=True,
             shuffle=True,
             num_parallel_calls=8,
-            prefetch_buffer_size=tf.data.AUTOTUNE
+            prefetch_buffer=tf.data.AUTOTUNE
         )
         
         self.val_dataset = create_wc_dataset(
-            self.val_loader,
+            root=self.args.data_path,
+            split='val',
             batch_size=self.args.batch_size,
+            img_size=(self.args.img_rows, self.args.img_cols),
+            augmentations=False,
             shuffle=False,
             num_parallel_calls=8,
-            prefetch_buffer_size=tf.data.AUTOTUNE
+            prefetch_buffer=tf.data.AUTOTUNE
         )
         
         self.logger.info(f"Training samples: {len(self.train_loader)}")
@@ -146,6 +153,8 @@ class WorldCoordinateTrainer:
         dummy_input = tf.random.normal((1, self.args.img_rows, self.args.img_cols, 3))
         _ = self.model(dummy_input)
         
+
+        
         self.logger.info(f"Model created with {self.model.count_params()} parameters")
         
         # Hardtanh activation (equivalent to PyTorch version)
@@ -162,15 +171,12 @@ class WorldCoordinateTrainer:
             amsgrad=True
         )
         
-        # Learning rate scheduler (ReduceLROnPlateau equivalent)
-        self.lr_scheduler = tf.keras.callbacks.ReduceLROnPlateau(
-            monitor='val_mse',
-            factor=0.5,
-            patience=5,
-            verbose=1,
-            mode='min',
-            min_lr=1e-8
-        )
+        # Custom learning rate scheduler to avoid model.optimizer dependency
+        self.lr_scheduler_patience = 5
+        self.lr_scheduler_factor = 0.5
+        self.lr_scheduler_min_lr = 1e-8
+        self.lr_scheduler_wait = 0
+        self.lr_scheduler_best = float('inf')
     
     def setup_loss_functions(self):
         """Setup loss functions."""
@@ -214,6 +220,23 @@ class WorldCoordinateTrainer:
             optimizer=self.optimizer,
             model=self.model
         )
+    
+    def update_learning_rate(self, val_loss):
+        """Custom learning rate scheduling similar to ReduceLROnPlateau."""
+        if val_loss < self.lr_scheduler_best:
+            self.lr_scheduler_best = val_loss
+            self.lr_scheduler_wait = 0
+        else:
+            self.lr_scheduler_wait += 1
+            
+        if self.lr_scheduler_wait >= self.lr_scheduler_patience:
+            current_lr = float(self.optimizer.learning_rate.numpy())
+            new_lr = max(current_lr * self.lr_scheduler_factor, self.lr_scheduler_min_lr)
+            
+            if new_lr < current_lr:
+                self.optimizer.learning_rate.assign(new_lr)
+                self.logger.info(f"Reducing learning rate from {current_lr:.2e} to {new_lr:.2e}")
+                self.lr_scheduler_wait = 0
     
     def load_checkpoint(self, checkpoint_path: str):
         """Load model checkpoint."""
@@ -497,8 +520,8 @@ class WorldCoordinateTrainer:
             self.logger.info(f"Validation MSE: {val_losses['mse_loss']:.6f}")
             self.write_log_file(val_losses, epoch + 1, lr, 'Val')
             
-            # Learning rate scheduling
-            self.lr_scheduler.on_epoch_end(epoch, logs={'val_mse': val_losses['mse_loss']})
+            # Custom learning rate scheduling
+            self.update_learning_rate(val_losses['mse_loss'])
             
             # Save best model
             is_best = val_losses['mse_loss'] < self.best_val_mse

@@ -101,7 +101,7 @@ class SSIMLoss(keras.losses.Loss):
         self.window_size = window_size
         self.size_average = size_average
         self.channel = channels
-        self.window = None
+
     
     def call(self, y_true, y_pred):
         """Compute SSIM loss between predicted and true values.
@@ -116,12 +116,11 @@ class SSIMLoss(keras.losses.Loss):
         # Get channel dimension
         channel = tf.shape(y_pred)[-1]
         
-        # Create or update window if needed
-        if self.window is None or tf.shape(self.window)[2] != channel:
-            self.window = create_window(self.window_size, channel)
+        # Always create window fresh to avoid graph scope issues
+        window = create_window(self.window_size, channel)
         
         # Compute SSIM
-        ssim_value = _ssim(y_pred, y_true, self.window, self.window_size, channel, self.size_average)
+        ssim_value = _ssim(y_pred, y_true, window, self.window_size, channel, self.size_average)
         
         # Return 1 - SSIM as loss (higher SSIM = lower loss)
         return 1.0 - ssim_value

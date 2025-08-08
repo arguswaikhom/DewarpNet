@@ -81,7 +81,7 @@ def create_window(window_size, channel):
     return windowx, windowy
 
 
-def gradient(img, windowx, windowy, window_size, padding, channel):
+def gradient(img, windowx, windowy, window_size, padding):
     """Compute gradients using Sobel filters.
     
     Args:
@@ -90,38 +90,14 @@ def gradient(img, windowx, windowy, window_size, padding, channel):
         windowy (tf.Tensor): Y-gradient convolution kernel
         window_size (int): Size of the Sobel kernel
         padding (str): Padding type for convolution
-        channel (int): Number of channels
         
     Returns:
         tuple: (gradx, grady) - X and Y gradients
     """
-    if channel > 1:
-        # Process each channel separately
-        gradx_list = []
-        grady_list = []
-        
-        for i in range(channel):
-            # Extract single channel and add channel dimension
-            single_channel = tf.expand_dims(img[:, :, :, i], axis=-1)
-            
-            # Create single-channel kernel
-            single_windowx = windowx[:, :, 0:1, :]
-            single_windowy = windowy[:, :, 0:1, :]
-            
-            # Compute gradients for this channel
-            gradx_i = tf.nn.conv2d(single_channel, single_windowx, 
-                                 strides=[1, 1, 1, 1], padding=padding)
-            grady_i = tf.nn.conv2d(single_channel, single_windowy, 
-                                 strides=[1, 1, 1, 1], padding=padding)
-            
-            gradx_list.append(gradx_i)
-            grady_list.append(grady_i)
-        
-        gradx = tf.concat(gradx_list, axis=-1)
-        grady = tf.concat(grady_list, axis=-1)
-    else:
-        gradx = tf.nn.conv2d(img, windowx, strides=[1, 1, 1, 1], padding=padding)
-        grady = tf.nn.conv2d(img, windowy, strides=[1, 1, 1, 1], padding=padding)
+    # For TensorFlow graph compatibility, we'll process all channels at once
+    # This avoids the need for conditional execution based on tensor values
+    gradx = tf.nn.conv2d(img, windowx, strides=[1, 1, 1, 1], padding=padding)
+    grady = tf.nn.conv2d(img, windowy, strides=[1, 1, 1, 1], padding=padding)
     
     return gradx, grady
 
@@ -159,17 +135,16 @@ class GradLoss(keras.losses.Loss):
         # Get input shape
         batch_size, height, width, channel = tf.shape(y_pred)[0], tf.shape(y_pred)[1], tf.shape(y_pred)[2], tf.shape(y_pred)[3]
         
-        # Create or update kernels if needed
-        if self.windowx is None or tf.shape(self.windowx)[2] != channel:
-            self.windowx, self.windowy = create_window(self.window_size, channel)
+        # Create kernels for current input (always recreate to avoid tensor comparison issues)
+        self.windowx, self.windowy = create_window(self.window_size, channel)
         
         # Compute gradients for predicted values
         pred_gradx, pred_grady = gradient(y_pred, self.windowx, self.windowy, 
-                                        self.window_size, self.padding, channel)
+                                        self.window_size, self.padding)
         
         # Compute gradients for ground truth values
         label_gradx, label_grady = gradient(y_true, self.windowx, self.windowy, 
-                                          self.window_size, self.padding, channel)
+                                          self.window_size, self.padding)
         
         # Compute L1 loss between gradients
         l1_loss_x = tf.reduce_mean(tf.abs(pred_gradx - label_gradx))

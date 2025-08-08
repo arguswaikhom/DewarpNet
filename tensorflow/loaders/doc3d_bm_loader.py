@@ -14,7 +14,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.utils import Sequence
 import scipy.io as sio
-import hdf5storage as h5
+import h5py
 
 from .augmentations_tf import tight_crop_tf
 
@@ -51,8 +51,8 @@ class Doc3DBMLoader(Sequence):
         
         # Set alternative root path (for world coordinates and backward mapping)
         if altroot is None:
-            # Default path structure from PyTorch implementation
-            self.altroot = '/media/hilab/HiLabData/Sagnik/FoldedDocumentDataset/data/DewarpNet/swat3d/'
+            # Use the same root as the main dataset
+            self.altroot = self.root
         else:
             self.altroot = altroot
             
@@ -70,7 +70,7 @@ class Doc3DBMLoader(Sequence):
         
         # Load file lists for each split
         for split_name in ['train', 'val']:
-            path = pjoin(self.altroot, split_name + '.txt')
+            path = pjoin(self.root, split_name + '.txt')
             if os.path.exists(path):
                 with open(path, 'r') as f:
                     file_list = [line.rstrip() for line in f.readlines()]
@@ -90,17 +90,25 @@ class Doc3DBMLoader(Sequence):
         Returns:
             Tuple of (concatenated_input, backward_mapping) as TensorFlow tensors
         """
-        im_name = self.files[self.split][index]  # e.g., "1/2Xec_Page_453X56X0001"
+        im_name = self.files[self.split][index]  # e.g., "1_100_8-tc_Page_089-A7r0001"
         
-        # Parse folder and filename
-        img_foldr, fname = im_name.split('/')
+        # Handle both flat and folder/filename formats
+        if '/' in im_name:
+            img_foldr, fname = im_name.split('/')
+        else:
+            # Flat format - assume files are in subdirectory '1'
+            img_foldr = '1'
+            fname = im_name
+        
         recon_foldr = 'chess48'
         
         # Construct file paths
-        wc_path = pjoin(self.altroot, 'wc', im_name + '.exr')
-        bm_path = pjoin(self.altroot, 'bm', im_name + '.mat')
+        wc_path = pjoin(self.root, 'wc', img_foldr, fname + '.exr')
+        bm_path = pjoin(self.root, 'bm', img_foldr, fname + '.mat')
+        # Remove the trailing '0001' from fname if present for albedo path
+        fname_base = fname[:-4] if fname.endswith('0001') else fname
         alb_path = pjoin(self.root, 'recon', img_foldr, recon_foldr, 
-                        fname[:-4] + recon_foldr + '0001.png')
+                        fname_base + recon_foldr + '0001.png')
         
         # Load data
         wc = cv2.imread(wc_path, cv2.IMREAD_ANYCOLOR | cv2.IMREAD_ANYDEPTH)
@@ -108,12 +116,17 @@ class Doc3DBMLoader(Sequence):
         
         # Load backward mapping coordinates
         try:
-            bm_data = h5.loadmat(bm_path)
-            bm = bm_data['bm']
+            # Try h5py for v7.3 mat files
+            with h5py.File(bm_path, 'r') as f:
+                bm = np.array(f['bm']).T  # Transpose to get correct shape
         except:
-            # Fallback to scipy.io if hdf5storage fails
-            bm_data = sio.loadmat(bm_path)
-            bm = bm_data['bm']
+            # Fallback to scipy.io for older mat files
+            try:
+                bm_data = sio.loadmat(bm_path)
+                bm = bm_data['bm']
+            except Exception as e:
+                print(f"Error loading {bm_path}: {e}")
+                raise
         
         bm = np.array(bm, dtype=np.float32)
         
@@ -319,7 +332,8 @@ def create_bm_dataset(
     )
     
     if shuffle:
-        dataset = dataset.shuffle(buffer_size=min(1000, len(loader)))
+        buffer_size = max(1, min(1000, len(loader)))  # Ensure buffer_size is at least 1
+        dataset = dataset.shuffle(buffer_size=buffer_size)
     
     dataset = dataset.batch(batch_size)
     dataset = dataset.prefetch(prefetch_buffer)

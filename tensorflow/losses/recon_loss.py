@@ -20,13 +20,14 @@ def unwarp(img, bm):
     # Get backward mapping dimensions
     bm_h, bm_w = tf.shape(bm)[1], tf.shape(bm)[2]
     
+    # Convert to float64 for precision first (matching PyTorch implementation)
+    img = tf.cast(img, tf.float64)
+    bm = tf.cast(bm, tf.float64)
+    
     # Resize backward mapping to match image size if needed
     if bm_h != h or bm_w != w:
         bm = tf.image.resize(bm, [h, w], method='bilinear')
-    
-    # Convert to float64 for precision (matching PyTorch implementation)
-    img = tf.cast(img, tf.float64)
-    bm = tf.cast(bm, tf.float64)
+        bm = tf.cast(bm, tf.float64)  # Ensure dtype consistency after resize
     
     # TensorFlow's grid_sample expects coordinates in [-1, 1] range
     # The backward mapping coordinates should already be in this range
