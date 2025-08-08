@@ -1,0 +1,150 @@
+{
+  "timestamp": "2025-08-08T06:13:15.700242",
+  "dataset_size": "doc3d_100",
+  "system_info": {
+    "tensorflow_version": "2.19.0",
+    "python_version": "3.9.20 | packaged by conda-forge | (main, Sep 30 2024, 17:49:10) \n[GCC 13.3.0]",
+    "platform": "linux",
+    "timestamp": "2025-08-08T06:13:15.700254",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA GeForce RTX 3060 Laptop GPU"
+    ],
+    "memory_info": "psutil not available"
+  },
+  "validation_results": {
+    "dataset_preparation": {
+      "success": true,
+      "timestamp": "2025-08-08T06:13:16.256164"
+    },
+    "training_pipeline": {
+      "success": true,
+      "timestamp": "2025-08-08T06:14:02.607938"
+    },
+    "performance_validation": {
+      "success": false,
+      "timestamp": "2025-08-08T06:14:12.703290"
+    },
+    "inference_results": {
+      "overall_success": true,
+      "test_images_created": 5,
+      "inference_results": {
+        "total_images": 5,
+        "successful_inferences": 5,
+        "failed_inferences": 0,
+        "inference_times": [
+          0.4444882869720459,
+          0.4475085735321045,
+          0.4123189449310303,
+          0.3619351387023926,
+          0.36720871925354004
+        ],
+        "output_paths": [
+          "final_test_validation/inference_outputs/unwarped_1.png",
+          "final_test_validation/inference_outputs/unwarped_2.png",
+          "final_test_validation/inference_outputs/unwarped_3.png",
+          "final_test_validation/inference_outputs/unwarped_4.png",
+          "final_test_validation/inference_outputs/unwarped_5.png"
+        ],
+        "errors": [],
+        "avg_inference_time": 0.4066919326782227,
+        "total_inference_time": 2.0334596633911133,
+        "success_rate": 1.0
+      }
+    },
+    "inference_testing": {
+      "success": true,
+      "timestamp": "2025-08-08T06:14:23.036129"
+    },
+    "visual_assessment": {
+      "success": "True",
+      "timestamp": "2025-08-08T06:14:24.138328"
+    }
+  },
+  "performance_metrics": {
+    "model_info": {
+      "wc_model_size_mb": 430.8718719482422,
+      "bm_model_size_mb": 517.9240493774414
+    },
+    "inference_speed": {
+      "wc_inference_time_ms": 32.07354545593262,
+      "bm_inference_time_ms": 381.75835609436035,
+      "total_pipeline_time_ms": 413.83190155029297
+    },
+    "memory_usage": {},
+    "system_performance": {
+      "gpu_count": 1,
+      "cuda_available": true,
+      "gpu_available": true
+    }
+  },
+  "visual_assessments": {
+    "total_images_assessed": 5,
+    "individual_assessments": [
+      {
+        "image_path": "final_test_validation/inference_outputs/unwarped_4.png",
+        "quality_metrics": {
+          "sharpness": 751.223035082221,
+          "contrast": 30.690395129823845,
+          "brightness": 242.2364959716797,
+          "edge_density": 0.042877197265625,
+          "quality_score": 0.5211919912192349
+        }
+      },
+      {
+        "image_path": "final_test_validation/inference_outputs/unwarped_2.png",
+        "quality_metrics": {
+          "sharpness": 874.2258255106863,
+          "contrast": 31.541349561216563,
+          "brightness": 241.8852996826172,
+          "edge_density": 0.0498504638671875,
+          "quality_score": 0.5938657704894867
+        }
+      },
+      {
+        "image_path": "final_test_validation/inference_outputs/unwarped_5.png",
+        "quality_metrics": {
+          "sharpness": 658.1999019049108,
+          "contrast": 28.011377528128733,
+          "brightness": 243.17788696289062,
+          "edge_density": 0.0464935302734375,
+          "quality_score": 0.48679468416666305
+        }
+      },
+      {
+        "image_path": "final_test_validation/inference_outputs/unwarped_1.png",
+        "quality_metrics": {
+          "sharpness": 743.6746759281959,
+          "contrast": 30.904252874422866,
+          "brightness": 242.86672973632812,
+          "edge_density": 0.03900146484375,
+          "quality_score": 0.5071870235257969
+        }
+      },
+      {
+        "image_path": "final_test_validation/inference_outputs/unwarped_3.png",
+        "quality_metrics": {
+          "sharpness": 1074.4804631387815,
+          "contrast": 34.79841197124862,
+          "brightness": 240.63832092285156,
+          "edge_density": 0.0464324951171875,
+          "quality_score": 0.6436927212653084
+        }
+      }
+    ],
+    "overall_quality": {
+      "average_score": 0.5505464381332981,
+      "min_score": 0.48679468416666305,
+      "max_score": 0.6436927212653084,
+      "std_score": 0.05892164821125198,
+      "scores": [
+        0.5211919912192349,
+        0.5938657704894867,
+        0.48679468416666305,
+        0.5071870235257969,
+        0.6436927212653084
+      ]
+    }
+  },
+  "summary": {}
+}

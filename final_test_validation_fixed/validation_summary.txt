@@ -1,0 +1,20 @@
+TensorFlow DewarpNet Final Validation Summary
+==================================================
+
+Timestamp: 2025-08-08T06:21:36.753764
+Dataset: doc3d_100
+TensorFlow Version: 2.19.0
+GPU Count: 1
+
+Overall Status: FAILED
+Total Time: 0.00 seconds
+
+Validation Results:
+--------------------
+Dataset Preparation: PASSED
+Training Pipeline: PASSED
+Performance Validation: PASSED
+Inference Testing: PASSED
+Visual Assessment: PASSED
+
+Detailed metrics available in final_validation_results.json

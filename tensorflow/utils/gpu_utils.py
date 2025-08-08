@@ -62,6 +62,80 @@ def configure_gpu_memory_growth():
     return False
 
 
+def setup_gpu():
+    """Setup GPU configuration for training/inference."""
+    print("Setting up GPU configuration...")
+    
+    # Configure memory growth
+    configure_gpu_memory_growth()
+    
+    # Skip mixed precision for now to avoid dtype issues
+    print("✓ GPU setup complete (mixed precision disabled for compatibility)")
+    
+    return True
+
+
+def get_gpu_info():
+    """Get comprehensive GPU information."""
+    gpus = tf.config.list_physical_devices('GPU')
+    
+    info = {
+        'gpu_count': len(gpus),
+        'gpus': [],
+        'cuda_available': tf.test.is_built_with_cuda(),
+        'gpu_available': tf.test.is_gpu_available() if gpus else False
+    }
+    
+    for i, gpu in enumerate(gpus):
+        gpu_info = {
+            'index': i,
+            'name': gpu.name,
+            'device_type': gpu.device_type
+        }
+        
+        try:
+            details = tf.config.experimental.get_device_details(gpu)
+            gpu_info['details'] = details
+        except Exception as e:
+            gpu_info['details'] = f"Error getting details: {e}"
+        
+        info['gpus'].append(gpu_info)
+    
+    return info
+
+
+def check_gpu_memory():
+    """Check GPU memory usage."""
+    gpus = tf.config.list_physical_devices('GPU')
+    
+    if not gpus:
+        return {'error': 'No GPUs available'}
+    
+    memory_info = {}
+    
+    for i, gpu in enumerate(gpus):
+        try:
+            # This requires the GPU to be initialized
+            with tf.device(f'/GPU:{i}'):
+                # Create a small tensor to initialize the GPU
+                _ = tf.constant([1.0])
+            
+            # Try to get memory info (may not work on all systems)
+            try:
+                memory_stats = tf.config.experimental.get_memory_info(f'GPU:{i}')
+                memory_info[f'GPU_{i}'] = {
+                    'current_mb': memory_stats['current'] / (1024**2),
+                    'peak_mb': memory_stats['peak'] / (1024**2)
+                }
+            except Exception:
+                memory_info[f'GPU_{i}'] = {'status': 'Memory info not available'}
+                
+        except Exception as e:
+            memory_info[f'GPU_{i}'] = {'error': str(e)}
+    
+    return memory_info
+
+
 def test_gpu_computation():
     """Test basic GPU computation."""
     print("Testing GPU computation...")

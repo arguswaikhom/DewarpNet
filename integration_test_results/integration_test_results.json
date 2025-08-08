@@ -1,0 +1,32 @@
+{
+  "timestamp": "2025-08-08 06:04:56",
+  "system_info": {
+    "tensorflow_version": "2.19.0",
+    "python_version": "3.9.20 | packaged by conda-forge | (main, Sep 30 2024, 17:49:10) \n[GCC 13.3.0]",
+    "platform": "linux",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA GeForce RTX 3060 Laptop GPU"
+    ]
+  },
+  "test_results": {
+    "model_compatibility": {
+      "success": false,
+      "duration": 0.18007516860961914,
+      "timestamp": "2025-08-08 06:04:58"
+    },
+    "data_pipeline": {
+      "success": false,
+      "duration": 0.0015299320220947266,
+      "timestamp": "2025-08-08 06:04:58"
+    }
+  },
+  "performance_metrics": {},
+  "summary": {
+    "overall_success": false,
+    "total_time": 0.18178653717041016,
+    "tests_passed": 0,
+    "tests_total": 2,
+    "success_rate": 0.0
+  }
+}

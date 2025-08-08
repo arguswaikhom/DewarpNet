@@ -53,16 +53,16 @@ ls -la data/
 #### World Coordinate Network Training
 ```bash
 # Train on doc3d_100 (recommended for testing)
-python training/train_wc.py --dataset doc3d_100 --epochs 50
+python training/train_wc.py --dataset data/doc3d_100 --epochs 50
 
 # Train on full dataset
-python training/train_wc.py --dataset doc3d --epochs 200
+python training/train_wc.py --dataset data/doc3d --epochs 200
 ```
 
 #### Backward Mapping Network Training
 ```bash
 # Train backward mapping network (requires trained WC model)
-python training/train_bm.py --wc_model_path checkpoints/wc_best.pth --dataset doc3d_100
+python training/train_bm.py --wc_model_path checkpoints/wc_best.pth --dataset data/doc3d_100
 
 # Train with custom loss weights
 python training/train_bm.py --wc_model_path checkpoints/wc_best.pth --grad_loss_weight 20 --recon_loss_weight 1

@@ -1,0 +1,15 @@
+TensorFlow DewarpNet Integration Test Report
+==================================================
+
+Timestamp: 2025-08-08 06:04:56
+TensorFlow Version: 2.19.0
+GPU Count: 1
+
+Test Results:
+--------------------
+Model Compatibility: FAILED (0.18s)
+Data Pipeline: FAILED (0.00s)
+
+Overall: FAILED
+Success Rate: 0.0%
+Total Time: 0.18s

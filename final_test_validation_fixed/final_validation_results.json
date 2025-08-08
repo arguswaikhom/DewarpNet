@@ -1,0 +1,150 @@
+{
+  "timestamp": "2025-08-08T06:21:36.753764",
+  "dataset_size": "doc3d_100",
+  "system_info": {
+    "tensorflow_version": "2.19.0",
+    "python_version": "3.9.20 | packaged by conda-forge | (main, Sep 30 2024, 17:49:10) \n[GCC 13.3.0]",
+    "platform": "linux",
+    "timestamp": "2025-08-08T06:21:36.753777",
+    "gpu_count": 1,
+    "gpu_names": [
+      "NVIDIA GeForce RTX 3060 Laptop GPU"
+    ],
+    "memory_info": "psutil not available"
+  },
+  "validation_results": {
+    "dataset_preparation": {
+      "success": true,
+      "timestamp": "2025-08-08T06:21:37.372726"
+    },
+    "training_pipeline": {
+      "success": true,
+      "timestamp": "2025-08-08T06:22:26.190217"
+    },
+    "performance_validation": {
+      "success": true,
+      "timestamp": "2025-08-08T06:22:36.208271"
+    },
+    "inference_testing": {
+      "success": true,
+      "timestamp": "2025-08-08T06:22:46.899830"
+    },
+    "visual_assessment": {
+      "success": "True",
+      "timestamp": "2025-08-08T06:22:48.135282"
+    }
+  },
+  "performance_metrics": {
+    "model_info": {
+      "wc_model_size_mb": 430.8718719482422,
+      "bm_model_size_mb": 517.9240493774414
+    },
+    "inference_speed": {
+      "wc_inference_time_ms": 35.02802848815918,
+      "bm_inference_time_ms": 420.9409236907959,
+      "total_pipeline_time_ms": 455.9689521789551
+    },
+    "memory_usage": {},
+    "system_performance": {
+      "gpu_count": 1,
+      "cuda_available": true,
+      "gpu_available": true
+    }
+  },
+  "visual_assessments": {
+    "total_images_assessed": 5,
+    "individual_assessments": [
+      {
+        "image_path": "final_test_validation_fixed/inference_outputs/unwarped_4.png",
+        "quality_metrics": {
+          "sharpness": 721.7558181947097,
+          "contrast": 31.67562592242505,
+          "brightness": 241.91310119628906,
+          "edge_density": 0.0377349853515625,
+          "quality_score": 0.4969341610998465
+        }
+      },
+      {
+        "image_path": "final_test_validation_fixed/inference_outputs/unwarped_2.png",
+        "quality_metrics": {
+          "sharpness": 821.7007545789238,
+          "contrast": 31.56085861010889,
+          "brightness": 241.99574279785156,
+          "edge_density": 0.0404052734375,
+          "quality_score": 0.5445786979743962
+        }
+      },
+      {
+        "image_path": "final_test_validation_fixed/inference_outputs/unwarped_5.png",
+        "quality_metrics": {
+          "sharpness": 640.5618669295218,
+          "contrast": 27.801408170765793,
+          "brightness": 243.360107421875,
+          "edge_density": 0.035980224609375,
+          "quality_score": 0.44756964511223113
+        }
+      },
+      {
+        "image_path": "final_test_validation_fixed/inference_outputs/unwarped_1.png",
+        "quality_metrics": {
+          "sharpness": 777.9119458459318,
+          "contrast": 31.056242972471242,
+          "brightness": 242.4886474609375,
+          "edge_density": 0.0360870361328125,
+          "quality_score": 0.512594615654224
+        }
+      },
+      {
+        "image_path": "final_test_validation_fixed/inference_outputs/unwarped_3.png",
+        "quality_metrics": {
+          "sharpness": 1092.2750470489264,
+          "contrast": 35.87875112115604,
+          "brightness": 239.85507202148438,
+          "edge_density": 0.043853759765625,
+          "quality_score": 0.6391975326603432
+        }
+      }
+    ],
+    "overall_quality": {
+      "average_score": 0.5281749305002081,
+      "min_score": 0.44756964511223113,
+      "max_score": 0.6391975326603432,
+      "std_score": 0.06373546217555598,
+      "scores": [
+        0.4969341610998465,
+        0.5445786979743962,
+        0.44756964511223113,
+        0.512594615654224,
+        0.6391975326603432
+      ]
+    }
+  },
+  "summary": {},
+  "inference_pipeline_details": {
+    "overall_success": true,
+    "test_images_created": 5,
+    "inference_results": {
+      "total_images": 5,
+      "successful_inferences": 5,
+      "failed_inferences": 0,
+      "inference_times": [
+        0.5006341934204102,
+        0.49933648109436035,
+        0.49627161026000977,
+        0.42767333984375,
+        0.4253060817718506
+      ],
+      "output_paths": [
+        "final_test_validation_fixed/inference_outputs/unwarped_1.png",
+        "final_test_validation_fixed/inference_outputs/unwarped_2.png",
+        "final_test_validation_fixed/inference_outputs/unwarped_3.png",
+        "final_test_validation_fixed/inference_outputs/unwarped_4.png",
+        "final_test_validation_fixed/inference_outputs/unwarped_5.png"
+      ],
+      "errors": [],
+      "avg_inference_time": 0.46984434127807617,
+      "total_inference_time": 2.349221706390381,
+      "success_rate": 1.0
+    }
+  }
+}
