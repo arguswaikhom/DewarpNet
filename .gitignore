@@ -102,3 +102,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+
+data/
+
+tensorflow_env/
+tensorflow_env_v2/
+.venv-3-12/
